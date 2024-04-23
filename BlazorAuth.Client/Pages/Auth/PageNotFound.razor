@@ -1,0 +1,18 @@
+@page "/not-found"
+@layout LoginLayout
+
+@inject NavigationManager navigation
+
+<div class="jumbotron">
+    <h1>Page not found!!!</h1>
+    <p>Some image</p>
+
+    <button class="btn btn-default" @onclick="GoToHomePage">Go back</button>
+</div>
+
+@code {
+    public void GoToHomePage()
+    {
+        navigation.NavigateTo("/");
+    }
+}

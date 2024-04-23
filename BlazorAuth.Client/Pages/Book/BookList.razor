@@ -1,0 +1,56 @@
+@page "/books"
+@attribute [Authorize]
+
+@inject IBookDataService bookDataSrv
+@inject NavigationManager navManager
+
+@if (!books.Any())
+{
+    <h2>There are not books to show!!!</h2>
+}
+else
+{
+    <div class="row mb-3">
+        <button class="btn btn-info" @onclick='(() => navManager.NavigateTo("/createbook"))' >New Book</button>
+    </div>
+    <div class="container">
+        <table class="table table-bordered table-hover">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Title</th>
+                    <th>Author</th>
+                    <th>Pages</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (Shared.Models.Book book in books)
+                {
+                    <tr>
+                        <td>@book.Title</td>
+                        <td>@book.Author</td>
+                        <td>@book.Pages</td>
+                        <td>
+                            <button class="btn btn-warning">Edit</button>
+                            <button class="btn btn-danger">Delete</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+
+@code {
+    IEnumerable<Shared.Models.Book> books = new List<Shared.Models.Book>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var response = await bookDataSrv.GetBooks();
+        if (response.Success)
+        {
+            books = response.Data;
+        }
+    }
+}

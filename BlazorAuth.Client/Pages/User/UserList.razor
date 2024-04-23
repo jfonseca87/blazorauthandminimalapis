@@ -1,0 +1,54 @@
+@page "/users"
+@attribute [Authorize(Roles = "Admin")]
+
+@inject IUserDataService userDataSrv
+
+@if (!users.Any())
+{
+    <h2>There are not users to show!!!</h2>
+}
+else
+{
+    <div class="container">
+        <table class="table table-bordered table-hover">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (Shared.Models.User user in users)
+                {
+                    <tr>
+                        <td>@user.Name</td>
+                        <td>@user.Email</td>
+                        <td>@user.Role</td>
+                        <td>@( user.Active ? "Active" : "Inactive" )</td>
+                        <td>
+                            <button class="btn btn-warning">Edit</button>
+                            <button class="btn btn-danger">Delete</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+@code {
+    IEnumerable<Shared.Models.User> users = new List<Shared.Models.User>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var response = await userDataSrv.GetUsersAsync();
+        if (response.Success)
+        {
+            users = response.Data;
+        }
+    }
+}
+

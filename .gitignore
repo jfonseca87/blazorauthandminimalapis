@@ -1,0 +1,7 @@
+.vs/
+BlazorAuth.Api/bin
+BlazorAuth.Api/obj
+BlazorAuth.Client/bin
+BlazorAuth.Client/obj
+BlazorAuth.Shared/bin
+BlazorAuth.Shared/obj

@@ -1,0 +1,74 @@
+﻿@using System.Security.Claims;
+
+<div class="top-row ps-3 navbar navbar-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="">BlazorAuth.Client</a>
+        <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+    </div>
+</div>
+
+<div class="@NavMenuCssClass nav-scrollable" @onclick="ToggleNavMenu">
+    <nav class="flex-column">
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
+            </NavLink>
+        </div>
+        @if (role.Equals("Admin"))
+        {
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="counter">
+                    <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Counter
+                </NavLink>
+            </div>
+        }
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="weather">
+                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Weather
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="books">
+                <span class="bi bi-journals" aria-hidden="true"></span> Books
+            </NavLink>
+        </div>
+        @if (role.Equals("Admin"))
+        {
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="users">
+                    <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Users
+                </NavLink>
+            </div>
+        }
+    </nav>
+</div>
+
+@code {
+    [CascadingParameter]
+    private Task<AuthenticationState>? authenticationState { get; set; }
+
+    private bool collapseNavMenu = true;
+    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+    private string role = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (authenticationState is null)
+            return;
+
+        var authState = await authenticationState;
+        var user = authState?.User;
+
+        if (user?.Identity is not null && user.Identity.IsAuthenticated)
+        {
+            role = user.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Role)?.Value!;
+        }
+    }
+
+    private void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+    }
+}

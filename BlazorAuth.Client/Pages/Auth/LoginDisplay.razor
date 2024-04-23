@@ -1,0 +1,22 @@
+@inject NavigationManager navigation
+@using BlazorAuth.Client.Auth;
+@using System.Security.Claims
+
+@inject AuthenticationStateProvider authProvider
+@inject ILocalStorageService localStorageSrv
+
+<AuthorizeView>
+    <Authorized>
+        Hello, @context.User.Identity?.Name!
+        <button class="nav-link btn btn-link" @onclick="RedirectToLogOut">Log out</button>
+    </Authorized>
+</AuthorizeView>
+
+@code {
+    public void RedirectToLogOut()
+    {
+        ((JwtAuthStateProvider)authProvider).LogOut();
+        localStorageSrv.RemoveItem("token");
+        navigation.NavigateToLogout("/login");
+    }
+}    

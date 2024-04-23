@@ -1,0 +1,62 @@
+@page "/login"
+@layout LoginLayout
+
+@inject AuthenticationStateProvider authProvider
+@inject NavigationManager navigation
+@inject IAuthDataService authDataSrv
+@inject ILocalStorageService localStorageSrv
+
+<!-- Login container -->
+<div class="login-container">
+    @if (!string.IsNullOrEmpty(errorMessage))
+    {
+        <div class="alert alert-danger" role="alert">
+            @errorMessage
+        </div>
+    }
+    <div class="mb-3">
+        <label for="email" class="form-label">Email</label>
+        <input id="email" class="form-control" @bind="loginModel.Email" />
+    </div>
+
+    <div class="mb-3">
+        <label for="password" class="form-label">Password</label>
+        <input type="password" id="password" class="form-control" @bind="loginModel.Password" />
+    </div>
+
+    <button class="btn btn-primary" @onclick="HandleSubmit" >Login</button>
+</div>
+
+
+@code {
+    private BlazorAuth.Shared.Models.Login loginModel = new BlazorAuth.Shared.Models.Login();
+    private string errorMessage = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await authProvider.GetAuthenticationStateAsync();
+        if (authState.User.Identity?.IsAuthenticated == true)
+        {
+            navigation.NavigateTo("/");
+        }
+    }
+
+    private async Task HandleSubmit()
+    {
+        if (string.IsNullOrEmpty(loginModel.Email) || string.IsNullOrEmpty(loginModel.Password))
+        {
+            errorMessage = "Email and password are required.";
+            return;
+        }
+
+        var response = await authDataSrv.Login(loginModel);
+        if (!response.Success)
+        {
+            Console.WriteLine("An error ocurred");
+            return;
+        }
+
+        await localStorageSrv.SetItem("token", response.Data.Token);
+        navigation.NavigateTo("/");
+    }
+}
